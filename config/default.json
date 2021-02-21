@@ -1,3 +1,4 @@
 {
-    "mongoURI": "mongodb+srv://Firas:thebestbigboss66@cluster0.3x6oh.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+    "mongoURI": "mongodb+srv://Firas:thebestbigboss66@cluster0.3x6oh.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+    "jwtSecret": "mysecret"
 }

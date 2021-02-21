@@ -1,8 +1,10 @@
 const express = require('express');
 const { check, validationResult } = require('express-validator/check');
+const config = require('config');
 const User = require('../../models/User');
 const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const saltRounds = 10;
 
 const router = express.Router();
@@ -57,6 +59,7 @@ router.post('/', [
         });
 
         // Encrypt password using bcrypt 
+        // I added the toString() otherwise it didn't work thanks to : https://github.com/bradtraversy/nodeauthapp/issues/7
         const salt = await bcrypt.genSalt(saltRounds);
 
         user.password = await bcrypt.hash(password.toString(), salt);
@@ -65,8 +68,19 @@ router.post('/', [
 
 
         // Return the JWT using jsonwebtoken
+        const payload = {
+            user: {
+                id: user.id,
+            }
+        }
 
-        res.send('User registered');
+        jwt.sign(payload, config.get('jwtSecret'), { expiresIn: 360000 }, (err, token) => {
+            if (err) throw err;
+            res.json({ token });
+        });
+
+
+        // res.send('User registered');
 
     } catch (err) {
         console.error(err.message);
