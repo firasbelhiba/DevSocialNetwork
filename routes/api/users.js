@@ -1,6 +1,7 @@
 const express = require('express');
 const { check, validationResult } = require('express-validator/check');
 const User = require('../../models/User');
+const gravatar = require('gravatar');
 
 const router = express.Router();
 
@@ -39,8 +40,22 @@ router.post('/', [
         }
 
         // Get users gravatar 
+        const avatar = gravatar.url(email, {
+            s: '200',
+            r: 'pg',
+            d: 'mm'
+        })
+
+        // This doesn't create the user it just create an inctance of it (we have to implement the .save();)
+        user = new User({
+            name,
+            email,
+            avatar,
+            password
+        });
 
         // Encrypt password using bcrypt 
+
 
         // Return the JWT using jsonwebtoken
 
