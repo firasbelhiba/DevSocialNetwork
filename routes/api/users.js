@@ -2,6 +2,8 @@ const express = require('express');
 const { check, validationResult } = require('express-validator/check');
 const User = require('../../models/User');
 const gravatar = require('gravatar');
+const bcrypt = require('bcryptjs');
+const saltRounds = 10;
 
 const router = express.Router();
 
@@ -55,11 +57,16 @@ router.post('/', [
         });
 
         // Encrypt password using bcrypt 
+        const salt = await bcrypt.genSalt(saltRounds);
+
+        user.password = await bcrypt.hash(password.toString(), salt);
+
+        await user.save();
 
 
         // Return the JWT using jsonwebtoken
 
-        res.send('User route');
+        res.send('User registered');
 
     } catch (err) {
         console.error(err.message);
