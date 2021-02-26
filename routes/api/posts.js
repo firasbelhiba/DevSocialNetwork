@@ -179,4 +179,39 @@ router.post('/comment/:id', [auth, [
     }
 });
 
+//@route Delete api/posts/comment/:id/:comment_id
+//@desc Comment on a post 
+//@access Private (you have to be logged in to create a post)
+router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
+
+    try {
+        const post = await Post.findById(req.params.id);
+
+        // Pull out comment 
+        const comment = post.comments.find(comment => comment.id === req.params.comment_id);
+
+        // Check if comments exists 
+        if (!comment) {
+            return res.status(400).json({ message: 'This comment is not found' });
+        }
+
+        //Check if the user who deleting the comment is the user who created the comment
+        if (comment.user.toString() !== req.user.id) {
+            return res.status(401).json({ message: 'User are unauthorized to delete this post' });
+        }
+
+        const removeIndex = post.comments.map(comments => comments.user.toString()).indexOf(req.user.id);
+
+        post.comments.splice(removeIndex, 1);
+
+        await post.save();
+
+        res.json(post.comments);
+
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send('Server error');
+    }
+});
+
 module.exports = router; 
