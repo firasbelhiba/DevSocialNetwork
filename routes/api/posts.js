@@ -50,4 +50,23 @@ router.get('/', auth, async (req, res) => {
     }
 });
 
+//@route GET api/posts/:id
+//@desc Get post by ID
+//@access Private (you have to be logged in to create a post)
+router.get('/:id', auth, async (req, res) => {
+    try {
+        const posts = await Post.findById(req.params.id);
+        res.json(post);
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+    } catch (error) {
+        console.error(error.message);
+        if (err.kind === 'ObjectId') {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+        res.status(500).send('Server error');
+    }
+});
+
 module.exports = router; 
